@@ -1,3 +1,4 @@
+prometheus_client
 scapy
 subprocess32
 -r common-requirements.txt

@@ -8,6 +8,10 @@ import sys
 import os
 from click_default_group import DefaultGroup
 
+
+
+from prometheus_client import start_http_server
+
 CONFIG_FILE = 'amazon-dash.yml'
 
 
@@ -100,6 +104,8 @@ def run(config, root_allowed, ignore_perms):
     click.secho('Listening for events. Amazon-dash will execute the events associated with '
                'the registered buttons.', fg='yellow')
     from amazon_dash.listener import Listener
+    start_http_server(6900)
+
     Listener(config, ignore_perms).run(root_allowed=root_allowed)
 
 

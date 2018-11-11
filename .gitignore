@@ -93,3 +93,5 @@ ENV/
 .idea
 /amazon-dash.yml
 /_e3/
+
+sftp-config.json

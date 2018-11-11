@@ -7,6 +7,7 @@ from pwd import getpwuid
 from jsonschema import validate, ValidationError
 from yaml import load
 from yaml.error import YAMLError
+from prometheus_client import start_http_server, Summary
 
 from amazon_dash.exceptions import SecurityException, ConfigFileNotFoundError, InvalidConfig
 

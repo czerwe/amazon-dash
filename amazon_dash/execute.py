@@ -10,6 +10,7 @@ from requests import request, RequestException
 from amazon_dash._compat import JSONDecodeError
 from amazon_dash.exceptions import SecurityException, InvalidConfig, ExecuteError
 from ._compat import urlparse, subprocess
+from prometheus_client import Counter
 
 EXECUTE_SHELL_PARAM = '-c'
 ROOT_USER = 'root'
@@ -110,6 +111,7 @@ class Execute(object):
         """
         self.name = name
         self.data = data
+        self.execute_counter = Counter('dash_execute', 'Execution of dashbutton', ['type', 'name'])
 
     def validate(self):
         """Check self.data. Raise InvalidConfig on error
@@ -138,6 +140,7 @@ class ExecuteCmd(Execute):
         :param data: data on device section
         """
         super(ExecuteCmd, self).__init__(name, data)
+
         self.user = data.get('user', getpass.getuser())
         self.cwd = data.get('cwd')
 
@@ -168,6 +171,9 @@ class ExecuteCmd(Execute):
         else:
             cmd = run_as_cmd(self.data['cmd'], self.user)
             output = execute_cmd(cmd, self.data.get('cwd'))
+
+        self.execute_counter.labels(type="cmd", name=self.name).inc()
+
         if output:
             return output[0]
 
@@ -223,6 +229,9 @@ class ExecuteUrl(Execute):
         data = resp.raw.read(1000, decode_content=True)
         if sys.version_info >= (3,):
             data = data.decode('utf-8', errors='ignore')
+
+        self.execute_counter.labels(type="urlparse", name=self.name).inc()
+
         return data
 
 
